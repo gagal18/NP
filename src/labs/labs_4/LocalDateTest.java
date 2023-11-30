@@ -1,4 +1,4 @@
-package labs_4;
+package labs.labs_4;
 
 import java.time.*;
 import java.time.temporal.TemporalAdjusters;
