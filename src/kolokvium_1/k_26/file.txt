@@ -1,34 +1,11 @@
-package kolokvium_1.k_26;
-
+import javax.swing.*;
+import java.lang.management.OperatingSystemMXBean;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
-class Equation<S, F>{
-    Supplier<S> supplier;
-    Function<S,F> function;
+import java.util.stream.Stream;
 
-    public Equation(Supplier<S> supplier, Function<S, F> function) {
-        this.supplier = supplier;
-        this.function = function;
-    }
 
-    public Optional<F> calculate(){
-        return Optional.of(function.apply(supplier.get()));
-    }
-}
-
-class EquationProcessor{
-    public static <T,V> void process(List<T> input, List<Equation<T,V>> eq){
-        for (T i: input) {
-            System.out.println("Input: "+i);
-        }
-        for (Equation<T,V> e: eq) {
-            if(e.calculate().isPresent())
-                System.out.println("Result: " + e.calculate().get());
-
-        }
-    }
-}
 class Line {
     Double coeficient;
     Double x;
@@ -59,6 +36,33 @@ class Line {
     }
 }
 
+class Equation<V, I> {
+    Supplier<V> supplier;
+    Function<V, I> fn;
+
+    public Optional<I> calculate() {
+        return Optional.of(fn.apply(supplier.get()));
+    }
+
+    public Equation(Supplier<V> supplier, Function<V, I> fn) {
+        this.supplier = supplier;
+        this.fn = fn;
+    }
+
+}
+
+class EquationProcessor {
+    static <V, I> void process(List<V> inputs, List<Equation<V, I>> equations) {
+        for (V x : inputs) {
+            System.out.printf("Input: " + x);
+        }
+        Set<Optional<I>> results = new HashSet<>();
+        for (int i = 0; i < inputs.size(); i++) {
+            results.add(equations.get(i).calculate()))
+        }
+    }
+}
+
 public class EquationTester {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
@@ -71,12 +75,19 @@ public class EquationTester {
                 inputs.add(Integer.parseInt(sc.nextLine()));
             }
 
-            // TODO: Add an equation where you get the 3rd integer from the inputs list, and the result is the sum of that number and the number 1000.
-            equations1.add(new Equation<>(() -> inputs.get(2), s -> s + 1000));
+            Equation<Integer, Integer> eq = new Equation<Integer, Integer>(
+                    () -> inputs.get(2),
+                    i -> i + 1000
+            );
+            equations1.add(eq);
 
+            // TODO: Add an equation where you get the 3rd integer from the inputs list, and the result is the sum of that number and the number 1000.
+            Equation<Integer, Integer> eq2 = new Equation<Integer, Integer>(
+                    () -> inputs.get(4),
+                    i -> Math.max(i, 100)
+            );
 
             // TODO: Add an equation where you get the 4th integer from the inputs list, and the result is the maximum of that number and the number 100.
-            equations1.add(new Equation<>(() -> inputs.get(1), s -> Math.max(s, 100)));
 
             EquationProcessor.process(inputs, equations1);
 
@@ -86,12 +97,20 @@ public class EquationTester {
             while (sc.hasNext()) {
                 inputs.add(Line.createLine(sc.nextLine()));
             }
-
+            Equation<Line, Double> eq2 = new Equation<Line, Double>(
+                    () -> inputs.get(1),
+                    Line::calculateLine
+            );
             //TODO Add an equation where you get the 2nd line, and the result is the value of y in the line equation.
-            equations2.add(new Equation<>(() -> inputs.get(1), s -> s.calculateLine()));
+            Equation<Line, Double> eq3 = new Equation<Line, Double>(
+                    () -> inputs.get(0),
+                    i -> inputs.stream()
+                            .mapToDouble(Line::calculateLine) // l
+                            .filter(x -> i.calculateLine() < x)
+                            .sum()
+            );
 
             //TODO Add an equation where you get the 1st line, and the result is the sum of all y values for all lines that have a greater y value than that equation.
-            equations2.add(new Equation<>(() -> inputs.get(0), s -> inputs.stream().filter(i -> i.calculateLine() > s.calculateLine()).mapToDouble(Line::calculateLine).sum()));
 
             EquationProcessor.process(inputs, equations2);
         }
