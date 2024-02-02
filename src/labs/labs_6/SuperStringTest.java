@@ -2,52 +2,67 @@ package labs.labs_6;
 
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Scanner;
 
-
-
 class SuperString {
-    private LinkedList<String> string;
+    private LinkedList<String> list;
+    private List<String> lastAdded;
 
-    SuperString() {
-        string = new LinkedList<>();
+    public SuperString() {
+
+        this.list = new LinkedList<>();
+        this.lastAdded = new LinkedList<>();
     }
 
     public void append(String s) {
-        string.add(s);
+        list.add(s);
+        lastAdded.add(0, s);
     }
 
     public void insert(String s) {
-        string.add(0, s);
+        list.add(0, s);
+        lastAdded.add(0, s);
     }
 
     public boolean contains(String s) {
         return toString().contains(s);
     }
 
+    public void reverse() {
+        Collections.reverse(list);
+        for (int i = 0; i < list.size(); i++) {
+            list.set(i, reverseString(list.get(i)));
+            lastAdded.set(i, reverseString(lastAdded.get(i)));
+        }
+    }
+
+    private String reverseString(String str) {
+        return new StringBuilder(str).reverse().toString();
+    }
+
+    public void removeLast(int k) {
+        int size = list.size();
+        if (k >= size) {
+            list.clear();
+        } else {
+            for(int i = 0; i < k; i++) {
+                list.remove(lastAdded.get(i));
+            }
+            lastAdded = lastAdded.subList(k, lastAdded.size());
+        }
+    }
+
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
-        for (String s : string) {
+        for (String s : list) {
             str.append(s);
         }
         return str.toString();
     }
-
-    public void reverse() {
-        Collections.reverse(string);
-        for (int i = 0; i < string.size(); i++) {
-            String reversed = new StringBuilder(string.get(i)).reverse().toString();
-            string.set(i, reversed);
-        }
-    }
-
-    public void removeLast(int k) {
-        for (int i = 0; i < k && !string.isEmpty(); i++) {
-            string.removeLast();
-        }
-    }
 }
+
 public class SuperStringTest {
 
     public static void main(String[] args) {
