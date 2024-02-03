@@ -165,13 +165,22 @@ public class ChatSystemTest {
         if ( k == 0 ) {
             ChatRoom cr = new ChatRoom(jin.next());
             int n = jin.nextInt();
+            boolean notOnlyZeros = false;
             for ( int i = 0 ; i < n ; ++i ) {
                 k = jin.nextInt();
                 if ( k == 0 ) cr.addUser(jin.next());
-                if ( k == 1 ) cr.removeUser(jin.next());
-                if ( k == 2 ) System.out.println(cr.hasUser(jin.next()));
+                if ( k == 1 ) {
+                    cr.removeUser(jin.next());
+                    notOnlyZeros = true;
+                }
+                if ( k == 2 ) {
+                    System.out.println(cr.hasUser(jin.next()));
+                    notOnlyZeros = true;
+                }
             }
-            System.out.println("");
+            if(notOnlyZeros){
+                System.out.println("");
+            }
             System.out.println(cr.toString());
             n = jin.nextInt();
             if ( n == 0 ) return;
